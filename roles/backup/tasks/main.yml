@@ -1,0 +1,56 @@
+---
+# Prepare and backup needed container data volumes.
+- name: Down containers before doing backup.
+  include_role:
+    name: _container_down
+
+- block:
+
+    - name: Check if odoo-db-data volume exists
+      community.docker.docker_volume_info:
+        name: "{{ inv_project_name }}_odoo-db-data"
+      register: vol_db_data_result
+
+    - name: Check if odoo-filestore volume exists
+      community.docker.docker_volume_info:
+        name: "{{ inv_project_name }}_odoo-filestore"
+      register: vol_filestore_result
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+- block:
+
+    - name: Set part of volume name using datetime.
+      ansible.builtin.set_fact:
+        backup_name: "{{ ansible_date_time.year }}{{ ansible_date_time.month }}\
+        {{ ansible_date_time.day }}_{{ ansible_date_time.hour }}\
+        {{ ansible_date_time.minute }}{{ ansible_date_time.second }}"
+
+    - name: Backup volumes
+      ansible.builtin.command:
+        argv:
+          - docker
+          - run
+          - -v
+          - "{{ inv_project_name }}_{{ item.vol }}:/volume"
+          - -v
+          - "{{ item.dir }}:/backup"
+          - --rm
+          - loomchild/volume-backup
+          - backup
+          - -c
+          - pigz
+          - "{{ backup_name }}"
+      loop:
+        - {vol: odoo-db-data, dir: "{{ inv_app_root_path }}/backups/db"}
+        - {vol: odoo-filestore, dir: "{{ inv_app_root_path }}/backups/filestore"}
+
+    - name: Find backups for rotation
+      include_role:
+        name: _backup_find
+
+    - name: Delete old backups after doing backup
+      include_role:
+        name: _delete_backups
+  # Volumes will not exist, when environment is created initially.
+  when: vol_db_data_result.exists and vol_filestore_result.exists

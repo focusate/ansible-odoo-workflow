@@ -1,0 +1,14 @@
+---
+# Destination paths.
+dpl_postgres_dir: "{{ inv_app_root_path }}/postgres_cfg"
+dpl_postgres_auto_conf_file: "{{ dpl_postgres_dir }}/postgres_params.sql"
+dpl_secrets_dir: "{{ inv_app_root_path }}/.secrets"
+dpl_secrets_postgres_file: "{{ dpl_secrets_dir }}/POSTGRES_PASSWORD_FILE"
+dpl_secrets_odoo_config_file: "{{ dpl_secrets_dir }}/odoo.override.conf"
+dpl_secrets_odoo_init_user_passwords_file: "{{ dpl_secrets_dir \
+  }}/odoo_init_user_passwords_file"
+dpl_dpl_secrets_domain_bundle_file: "{{ dpl_secrets_dir }}/domain.bundle.crt"
+dpl_secrets_domain_key: "{{ dpl_secrets_dir }}/domain.key"
+# Control vars.
+dpl_init_role: "{{ inv_app_root_path }}/.init_role"
+dpl_force_init: false

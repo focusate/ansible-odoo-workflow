@@ -1,0 +1,8 @@
+---
+- name: Delete old backups
+  file:
+    state: absent
+    path: "{{ item }}"
+  # -1 to compensate for zero based index list.
+  loop: "{{ sorted_backup_db_files[0:-inv_backup_files_count-1]+\
+  sorted_backup_filestore_files[0:-inv_backup_files_count-1] }}"

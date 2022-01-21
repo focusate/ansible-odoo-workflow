@@ -1,0 +1,55 @@
+---
+# Directories
+- name: Create secrets directory
+  ansible.builtin.file:
+    path: "{{ dpl_secrets_dir }}"
+    state: directory
+
+- name: Create PostgreSQL Configuration directory
+  ansible.builtin.file:
+    path: "{{ dpl_postgres_dir }}"
+    state: directory
+
+- name: Create backups directory
+  ansible.builtin.file:
+    path: "{{ inv_app_root_path }}/backups/{{ item }}"
+    state: directory
+  loop:
+    - db
+    - filestore
+
+# Files
+- name: Create PostgreSQL params file.
+  ansible.builtin.copy:
+    src: "{{ inv_postgres_auto_conf_file }}"
+    dest: "{{ dpl_postgres_auto_conf_file }}"
+
+- name: Create postgres password file
+  ansible.builtin.copy:
+    content: "{{ inv_host_secrets.postgres_password }}"
+    dest: "{{ dpl_secrets_postgres_file }}"
+  no_log: true
+
+- name: Create Odoo config file
+  ansible.builtin.copy:
+    content: "{{ inv_host_secrets.odoo_config }}"
+    dest: "{{ dpl_secrets_odoo_config_file }}"
+  no_log: true
+
+- name: Create Odoo admin user password file
+  ansible.builtin.copy:
+    content: "{{ inv_host_secrets.odoo_init_user_passwords }}"
+    dest: "{{ dpl_secrets_odoo_init_user_passwords_file }}"
+  no_log: true
+
+- name: Create Domain Bundle Certificate
+  ansible.builtin.copy:
+    content: "{{ inv_shared_secrets.domain_bundle }}"
+    dest: "{{ dpl_dpl_secrets_domain_bundle_file }}"
+  no_log: true
+
+- name: Create Domain Private Key
+  ansible.builtin.copy:
+    content: "{{ inv_shared_secrets.domain_key }}"
+    dest: "{{ dpl_secrets_domain_key }}"
+  no_log: true

@@ -1,0 +1,25 @@
+---
+
+- name: Save Odoo container status
+  set_fact:
+    odoo_ip: "{{ docker_compose_output.services.odoo.app_odoo_1.networks\
+      .app_backend.IPAddress }}"
+
+- name: Wait for Odoo port to be open
+  wait_for:
+    host: "{{ odoo_ip }}"
+    port: 8069
+    state: started
+
+- name: Change Odoo admin user password
+  ansible.builtin.script: "change-user-password \
+    {{ dpl_secrets_odoo_init_user_passwords_file }} --ignore-failed-login \
+    --host {{ ansible_host }} --port 443 --protocol jsonrpc+ssl"
+  become: true
+  become_user: "{{ inv_app_user }}"
+  no_log: true
+
+- name: Create .init_role to mark initiation as done.
+  ansible.builtin.template:
+    src: .init_role
+    dest: "{{ dpl_init_role }}"

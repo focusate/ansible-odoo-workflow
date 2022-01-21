@@ -1,0 +1,19 @@
+---
+- hosts: "{{ target | default('test_stage') }}"
+  pre_tasks:
+    - name: Prepare for stage deployment
+      include_role:
+        name: _prepare_deploy
+  roles:
+    - {
+      role: pre_init,
+      tags: init,
+      when: init_role_data.stat.path is not defined or dpl_force_init
+    }
+    - {role: restore, tags: restore}
+    - {role: container, tags: container}
+    - {
+      role: post_init,
+      tags: init,
+      when: init_role_data.stat.path is not defined or dpl_force_init
+    }

@@ -1,0 +1,91 @@
+---
+# Set up docker container
+- name: Run docker-compose for odoo app
+  community.docker.docker_compose:
+    project_name: "{{ inv_project_name }}"
+    pull: true
+    definition:
+      version: '2'
+      services:
+        odoo:
+          image: "{{ docker_image_name }}"
+          depends_on:
+            - db
+          volumes:
+            - odoo-filestore:/opt/odoo/data
+            - type: bind
+              source:
+                "{{ dpl_secrets_odoo_config_file }}"
+              target:
+                /etc/odoo/odoo.override.conf
+            - type: bind
+              source: "{{ dpl_secrets_postgres_file }}"
+              target: "{{ env_postgres_password_file }}"
+          environment:
+            POSTGRES_DB: "{{ env_postgres_db }}"
+            POSTGRES_USER: "{{ env_postgres_user }}"
+            POSTGRES_PORT: "{{ env_postgres_port }}"
+            POSTGRES_PASSWORD_FILE: "{{ env_postgres_password_file }}"
+            ODOO_OPT_LIMIT_TIME_CPU: "{{ env_odoo_opt_limit_time_cpu }}"
+            ODOO_OPT_LIMIT_TIME_REAL: "{{ env_odoo_opt_limit_time_real }}"
+            ODOO_OPT_WORKERS: "{{ env_odoo_opt_workers }}"
+            ODOO_WITHOUT_DEMO: "{{ env_odoo_without_demo }}"
+            ODOO_DEBUG_COMMAND: "enabled"
+            # Mandatory envs.
+            # These envs represent Odoo flag arguments, so we must pass
+            # empty string for it to properly recognize it.
+            ODOO_OPT_PROXY_MODE: ""
+            ODOO_OPT_SAVE: ""
+          networks:
+            - backend
+            - frontend
+        db:
+          image: postgres:13
+          volumes:
+            - odoo-db-data:/var/lib/postgresql/data
+            - "{{ dpl_postgres_auto_conf_file }}:/var/lib/postgresql/data/\
+              postgresql.auto.conf"
+            - type: bind
+              source: "{{ dpl_secrets_postgres_file }}"
+              target: "{{ env_postgres_password_file }}"
+          environment:
+            POSTGRES_DB: "{{ env_postgres_db }}"
+            POSTGRES_USER: "{{ env_postgres_user }}"
+            POSTGRES_PORT: "{{ env_postgres_port }}"
+            POSTGRES_PASSWORD_FILE: "{{ env_postgres_password_file }}"
+          networks:
+            - backend
+        web:
+          image: focusate/nginx:latest
+          ports:
+            - 443:443
+          depends_on:
+            - odoo
+          volumes:
+            - "{{ dpl_dpl_secrets_domain_bundle_file }}\
+              :/etc/ssl/nginx/domain.bundle.crt"
+            - "{{ dpl_secrets_domain_key }}:/etc/ssl/nginx/domain.key"
+          networks:
+            - frontend
+
+      volumes:
+        odoo-db-data:
+          driver: local
+        odoo-filestore:
+          driver: local
+
+      networks:
+        backend:
+        frontend:
+
+  register: docker_compose_output
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+- name: Remove dangling docker images
+  community.docker.docker_prune:
+    images: true
+    images_filters:
+      dangling: true
+  become: true
+  become_user: "{{ inv_app_user }}"

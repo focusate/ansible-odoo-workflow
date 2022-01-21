@@ -1,0 +1,63 @@
+---
+# Restore volumes
+- name: Down containers before doing restore.
+  include_role:
+    name: _container_down
+
+- name: Find backups for restore
+  include_role:
+    name: _backup_find
+
+- name: Determine exact backup name for restore
+  ansible.builtin.set_fact:
+    backup_db_file: "{{ sorted_backup_db_files[-inv_restore_file_pos] }}"
+    # Because db and filestore pairs have same name, we only need to
+    # get name for one of them.
+    # We take X latest file using restore_file_pos, then split it to
+    # only take base name without extension, because when restoring, we
+    # need to specify only that part.
+    backup_basename: "{{ sorted_backup_db_files[-inv_restore_file_pos] |
+          basename |
+          split('.') |
+          first
+        }}"
+
+- name: Transfer backup files from backups host
+  ansible.builtin.synchronize:
+    # src here is from inv_backups_host and dest currently executed host.
+    src: "{{ item }}"
+    dest: "{{ item }}"
+  delegate_to: "{{ inv_backups_host }}"
+  loop:
+    - "{{ backup_db_file }}"
+    # For filestore we only need to replace dirname (because basename
+    # is the same.
+    - "{{ inv_app_root_path }}/backups/filestore/{{ backup_db_file | basename }}"
+  when: inv_backups_host is defined
+
+- name: Restore volumes
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - -v
+      - "{{ inv_project_name }}_{{ item.vol }}:/volume"
+      - -v
+      - "{{ item.dir }}:/backup"
+      - --rm
+      - loomchild/volume-backup
+      - restore
+      # Force restore on non empty volume.
+      - -f
+      - -c
+      # Must use same format that was used to compress.
+      - pigz
+      - "{{ backup_basename }}"
+  loop:
+    - {vol: odoo-db-data, dir: "{{ inv_app_root_path }}/backups/db"}
+    - {vol: odoo-filestore, dir: "{{ inv_app_root_path }}/backups/filestore"}
+
+- name: Rotate old transferred backups
+  include_role:
+    name: _delete_backups
+  when: inv_backups_host is defined

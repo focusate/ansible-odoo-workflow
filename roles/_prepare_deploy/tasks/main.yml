@@ -1,0 +1,6 @@
+---
+- include_vars: deploy_vars.yml
+- name: Find .init_role that show if initialization was done already
+  ansible.builtin.stat:
+    path: "{{ dpl_init_role }}"
+  register: init_role_data

@@ -1,0 +1,68 @@
+---
+- name: Install required system packages
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - rsync
+
+- name: Add Docker GPG key
+  ansible.builtin.apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker repository
+  ansible.builtin.apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Install docker with deps and extras
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - python3-pip
+
+# Tasks for app user specifically.
+
+- name: create user for docker
+  ansible.builtin.user:
+    name: "{{ inv_app_user }}"
+    groups:
+      - docker
+    create_home: true
+    home: "{{ inv_app_root_path }}"
+    skeleton: "/etc/skel"
+    system: true
+    # Setting this shell so system user would still use bashrc.
+    shell: /bin/bash
+
+- block:
+    - name: Install docker SDK and OdooRPC
+      ansible.builtin.pip:
+        name:
+          - docker==5.0.3
+          - docker-compose==1.29.2
+          - odoorpc==0.8.0
+        extra_args: --user
+      become: true
+      become_user: "{{ inv_app_user }}"
+
+    - name: Log into Docker Hub
+      docker_login:
+        username: "{{ inv_registry_user }}"
+        password: "{{ inv_shared_secrets.docker_token_r }}"
+        email: "{{ inv_registry_email }}"
+      no_log: true
+
+    - name: Pull backup service
+      community.docker.docker_image:
+        name: loomchild/volume-backup
+        source: pull
+
+  become: true
+  become_user: "{{ inv_app_user }}"
