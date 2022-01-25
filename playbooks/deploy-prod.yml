@@ -1,9 +1,4 @@
 ---
-# TODO: add cron job for daily backups.
-# TODO: add Odoo setup mode, to install needed modules, set needed
-# params etc.
-# TODO: add upgrade mode, to automatically upgrade needed modules (
-# might be able to use click-odoo-update script).
 # TODO: might be useful to make it possible to change user password
 # without a need to log into Odoo. This way we would not need to know
 # old password.
