@@ -3,11 +3,8 @@
 dpl_postgres_dir: "{{ inv_app_root_path }}/postgres_cfg"
 dpl_postgres_conf_file: "{{ dpl_postgres_dir }}/postgresql.conf"
 dpl_secrets_dir: "{{ inv_app_root_path }}/.secrets"
-dpl_compose_dir: "{{ inv_app_root_path }}/{{ inv_project_name }}"
 dpl_secrets_postgres_file: "{{ dpl_secrets_dir }}/POSTGRES_PASSWORD_FILE"
 dpl_secrets_odoo_config_file: "{{ dpl_secrets_dir }}/odoo.override.conf"
-dpl_secrets_odoo_init_user_passwords_file: "{{ dpl_secrets_dir \
-  }}/odoo_init_user_passwords_file"
 dpl_dpl_secrets_domain_bundle_file: "{{ dpl_secrets_dir }}/domain.bundle.crt"
 dpl_secrets_domain_key: "{{ dpl_secrets_dir }}/domain.key"
 # Control vars.

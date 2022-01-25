@@ -1,0 +1,22 @@
+---
+- name: Restore volumes
+  ansible.builtin.command:
+    argv:
+      - docker
+      - run
+      - -v
+      - "{{ inv_project_name }}_{{ item.vol }}:/volume"
+      - -v
+      - "{{ item.dir }}:/backup"
+      - --rm
+      - loomchild/volume-backup
+      - restore
+      # Force restore on non empty volume.
+      - -f
+      - -c
+      # Must use same format that was used to compress.
+      - pigz
+      - "{{ backup_basename }}"
+  loop:
+    - {vol: odoo-db-data, dir: "{{ inv_app_root_path }}/backups/db"}
+    - {vol: odoo-filestore, dir: "{{ inv_app_root_path }}/backups/filestore"}

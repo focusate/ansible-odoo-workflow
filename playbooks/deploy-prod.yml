@@ -1,7 +1,4 @@
 ---
-# TODO: might be useful to make it possible to change user password
-# without a need to log into Odoo. This way we would not need to know
-# old password.
 - hosts: "{{ target | default('test_prod') }}"
   pre_tasks:
     - name: Prepare for prod deployment
@@ -13,6 +10,7 @@
       tags: init,
       when: init_role_data.stat.path is not defined or dpl_force_init
     }
+    - {role: _prepare_compose, tags: prep_compose}
     - {role: backup, tags: backup}
     - {role: container, tags: container}
     - {

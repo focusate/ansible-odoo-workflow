@@ -1,0 +1,7 @@
+---
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml
+    dest: "{{ inv_compose_dir }}/docker-compose.yml"
+  become: true
+  become_user: "{{ inv_app_user }}"

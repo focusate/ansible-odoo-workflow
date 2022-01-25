@@ -1,0 +1,16 @@
+---
+- name: Change Odoo user password
+  ansible.builtin.expect:
+    command: docker exec -it app_odoo_1 bash -c 'odoo shell -p 8055'
+    responses:
+      '>>> ':
+        # Encrypted login might have newlines, so we omit that.
+        - "login = '{{ user_login | trim }}'"
+        - "user = env['res.users'].search([('login', '=', login)])"
+        - True if user else exit()
+        - "user.password = '{{ user_pwd | trim}}'"
+        - "env.cr.commit()"
+        - exit()
+  become: true
+  become_user: "{{ inv_app_user }}"
+  no_log: true

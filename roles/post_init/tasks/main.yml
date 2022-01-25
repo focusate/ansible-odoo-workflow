@@ -12,12 +12,11 @@
     state: started
 
 - name: Change Odoo admin user password
-  ansible.builtin.script: "change-user-password \
-    {{ dpl_secrets_odoo_init_user_passwords_file }} --ignore-failed-login \
-    --host {{ ansible_host }} --port 443 --protocol jsonrpc+ssl"
-  become: true
-  become_user: "{{ inv_app_user }}"
-  no_log: true
+  include_role:
+    name: _change_user_pwd
+  vars:
+    user_login: "{{ inv_host_secrets.odoo_admin_user_login }}"
+    user_pwd: "{{ inv_host_secrets.odoo_admin_user_pwd }}"
 
 - name: Create .init_role to mark initiation as done.
   ansible.builtin.template:

@@ -1,0 +1,4 @@
+---
+- hosts: "{{ target | default('test_prod') }}"
+  roles:
+    - {role: _change_user_pwd}

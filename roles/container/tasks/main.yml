@@ -1,67 +1,15 @@
 ---
-- name: Copy docker-compose.yml
-  ansible.builtin.template:
-    src: docker-compose.yml
-    dest: "{{ dpl_compose_dir }}/docker-compose.yml"
-  become: true
-  become_user: "{{ inv_app_user }}"
+- name: Set Up Odoo (update, install modules, setup config)
+  include_tasks: setup.yml
+  args:
+    apply:
+      become: true
+      become_user: "{{ inv_app_user }}"
 
-- name: Initiate docker containers.
+- name: Start Odoo
   community.docker.docker_compose:
     project_name: "{{ inv_project_name }}"
-    project_src: "{{ dpl_compose_dir }}"
-    pull: true
-  register: docker_compose_output
-  become: true
-  become_user: "{{ inv_app_user }}"
-
-# We want to wait till Odoo is loaded before stopping it, because we
-# want to propertly initialize its database.
-- name: Save Odoo container status
-  set_fact:
-    odoo_ip: "{{ docker_compose_output.services.odoo.app_odoo_1.networks\
-      .app_backend.IPAddress }}"
-
-- name: Wait for Odoo port to be open
-  wait_for:
-    host: "{{ odoo_ip }}"
-    port: 8069
-    state: started
-
-- name: Stop Odoo container
-  ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv odoo"
-  args:
-    chdir: "{{ dpl_compose_dir }}"
-  become: true
-  become_user: "{{ inv_app_user }}"
-
-- name: Update Odoo modules
-  ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - run
-      - --rm
-      - odoo
-      - fc-update
-      - -d
-      - "{{ inv_db_name }}"
-    chdir: "{{ dpl_compose_dir }}"
-  register: docker_compose_output
-  become: true
-  become_user: "{{ inv_app_user }}"
-
-- name: Run Maraplus to setup Odoo.
-  ansible.builtin.command: "{{ docker_compose_bin }} run --rm odoo fc-maraplus"
-  args:
-    chdir: "{{ dpl_compose_dir }}"
-  become: true
-  become_user: "{{ inv_app_user }}"
-
-- name: Run docker-compose for odoo app
-  community.docker.docker_compose:
-    project_name: "{{ inv_project_name }}"
-    project_src: "{{ dpl_compose_dir }}"
-    state: present
+    project_src: "{{ inv_compose_dir }}"
   register: docker_compose_output
   become: true
   become_user: "{{ inv_app_user }}"

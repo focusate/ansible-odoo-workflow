@@ -1,5 +1,5 @@
 ---
-# Restore volumes
+# Tasks to take backup from delegated host and restore on current one
 - name: Down containers before doing restore.
   include_role:
     name: _container_down
@@ -35,27 +35,9 @@
     - "{{ inv_app_root_path }}/backups/filestore/{{ backup_db_file | basename }}"
   when: inv_backups_host is defined
 
-- name: Restore volumes
-  ansible.builtin.command:
-    argv:
-      - docker
-      - run
-      - -v
-      - "{{ inv_project_name }}_{{ item.vol }}:/volume"
-      - -v
-      - "{{ item.dir }}:/backup"
-      - --rm
-      - loomchild/volume-backup
-      - restore
-      # Force restore on non empty volume.
-      - -f
-      - -c
-      # Must use same format that was used to compress.
-      - pigz
-      - "{{ backup_basename }}"
-  loop:
-    - {vol: odoo-db-data, dir: "{{ inv_app_root_path }}/backups/db"}
-    - {vol: odoo-filestore, dir: "{{ inv_app_root_path }}/backups/filestore"}
+- name: Restore DB and Filestore volumes.
+  include_role:
+    name: _restore_volumes
 
 - name: Rotate old transferred backups
   include_role:

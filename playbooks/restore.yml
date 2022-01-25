@@ -1,0 +1,16 @@
+---
+- hosts: "{{ target | default('test_prod') }}"
+  roles:
+    - {role: _container_down}
+    # NOTE. This role expects `backup_basename` variable specified. This
+    # is backup file (without extension) residing in backup directory.
+    - {role: _restore_volumes}
+  post_tasks:
+    - name: Start Containers after restore.
+      community.docker.docker_compose:
+        project_name: "{{ inv_project_name }}"
+        project_src: "{{ inv_compose_dir }}"
+        pull: false
+      register: docker_compose_output
+      become: true
+      become_user: "{{ inv_app_user }}"

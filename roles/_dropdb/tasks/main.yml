@@ -1,0 +1,14 @@
+---
+- name: Drop database if requested
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - --rm
+      - odoo
+      - fc-dropdb
+      - --if-exists
+      - "{{ inv_db_name }}"
+    chdir: "{{ inv_compose_dir }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
