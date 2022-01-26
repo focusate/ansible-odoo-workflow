@@ -5,3 +5,10 @@
     dest: "{{ inv_compose_dir }}/docker-compose.yml"
   become: true
   become_user: "{{ inv_app_user }}"
+
+- name: Copy docker-compose.override.yml
+  ansible.builtin.template:
+    src: "{{ inv_compose_override_file }}"
+    dest: "{{ inv_compose_dir }}/docker-compose.override.yml"
+  become: true
+  become_user: "{{ inv_app_user }}"
