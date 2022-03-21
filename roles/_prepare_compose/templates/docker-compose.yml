@@ -3,6 +3,10 @@ version: '2'
 services:
   odoo:
     image: "{{ docker_image_name }}"
+    logging:
+      driver: syslog
+      options:
+        tag: odoo-container
     depends_on:
       - db
     volumes:
