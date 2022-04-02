@@ -36,6 +36,7 @@
       - --rm
       - odoo
       - fc-update
+      - --ignore-core-addons
       - -d
       - "{{ inv_db_name }}"
     chdir: "{{ inv_compose_dir }}"
