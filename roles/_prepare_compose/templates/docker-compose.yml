@@ -74,6 +74,8 @@ services:
       - "{{ dpl_dpl_secrets_domain_bundle_file }}\
         :/etc/ssl/nginx/domain.bundle.crt"
       - "{{ dpl_secrets_domain_key }}:/etc/ssl/nginx/domain.key"
+      - "{{ dpl_nginx_logo_file }}:/usr/share/nginx/html/maintenance_logo.png"
+      - "{{ dpl_nginx_html_file }}:/usr/share/nginx/html/custom_502.html"
     networks:
       - frontend
 

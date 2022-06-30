@@ -5,6 +5,16 @@
     path: "{{ dpl_secrets_dir }}"
     state: directory
 
+- name: Create data directory
+  ansible.builtin.file:
+    path: "{{ dpl_data_dir }}"
+    state: directory
+
+- name: Create data nginx directory
+  ansible.builtin.file:
+    path: "{{ dpl_data_dir }}/nginx"
+    state: directory
+
 - name: Create docker-compose directory
   ansible.builtin.file:
     path: "{{ inv_compose_dir }}"
@@ -24,6 +34,16 @@
     - filestore
 
 # Files
+- name: Create Nginx Maintenance Image file.
+  ansible.builtin.copy:
+    src: "{{ inv_nginx_logo_file }}"
+    dest: "{{ dpl_nginx_logo_file }}"
+
+- name: Create Nginx Maintenance HTML file.
+  ansible.builtin.copy:
+    src: "{{ inv_nginx_html_file }}"
+    dest: "{{ dpl_nginx_html_file }}"
+
 - name: Create PostgreSQL conf file.
   ansible.builtin.copy:
     src: "{{ inv_postgres_conf_file }}"

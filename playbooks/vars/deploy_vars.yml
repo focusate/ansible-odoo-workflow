@@ -7,6 +7,9 @@ dpl_secrets_postgres_file: "{{ dpl_secrets_dir }}/POSTGRES_PASSWORD_FILE"
 dpl_secrets_odoo_config_file: "{{ dpl_secrets_dir }}/odoo.override.conf"
 dpl_dpl_secrets_domain_bundle_file: "{{ dpl_secrets_dir }}/domain.bundle.crt"
 dpl_secrets_domain_key: "{{ dpl_secrets_dir }}/domain.key"
+dpl_data_dir: "{{ inv_app_root_path }}/data"
+dpl_nginx_logo_file: "{{ dpl_data_dir }}/nginx/maintenance_logo.png"
+dpl_nginx_html_file: "{{ dpl_data_dir }}/nginx/custom_502.html"
 # Control vars.
 dpl_init_role: "{{ inv_app_root_path }}/.init_role"
 dpl_force_init: false
