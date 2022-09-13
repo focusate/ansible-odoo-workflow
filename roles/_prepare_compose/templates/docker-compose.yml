@@ -53,7 +53,7 @@ services:
     image: postgres:13
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
-      - "{{ dpl_postgres_conf_file }}:/etc/postgresql/postgresql.conf"
+      - "{{ dpl_postgres_conf_file }}:/var/lib/postgresql/data/postgresql.conf"
       - type: bind
         source: "{{ dpl_secrets_postgres_file }}"
         target: "{{ env_postgres_password_file }}"
