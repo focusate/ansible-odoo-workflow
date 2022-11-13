@@ -1,0 +1,13 @@
+---
+
+- name: create user for docker
+  ansible.builtin.user:
+    name: "{{ inv_app_user }}"
+    groups:
+      - docker
+    create_home: true
+    home: "{{ inv_app_root_path }}"
+    skeleton: "/etc/skel"
+    system: true
+    # Setting this shell so system user would still use bashrc.
+    shell: /bin/bash

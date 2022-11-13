@@ -5,6 +5,12 @@
     path: "{{ dpl_secrets_dir }}"
     state: directory
 
+- name: Create AWS dir
+  ansible.builtin.file:
+    path: "{{ dpl_aws_dir }}"
+    state: directory
+  when: use_aws_ecr
+
 - name: Create data directory
   ansible.builtin.file:
     path: "{{ dpl_data_dir }}"
@@ -71,4 +77,17 @@
   ansible.builtin.copy:
     content: "{{ inv_shared_secrets.domain_key }}"
     dest: "{{ dpl_secrets_domain_key }}"
+  no_log: true
+
+- name: Create AWS Config File
+  ansible.builtin.copy:
+    src: "{{ inv_aws_conf_file }}"
+    dest: "{{ dpl_aws_conf_file }}"
+  when: use_aws_ecr
+
+- name: Create AWS Credentials File
+  ansible.builtin.copy:
+    content: "{{ inv_shared_secrets.aws_credentials }}"
+    dest: "{{ dpl_aws_credentials_file }}"
+  when: use_aws_ecr
   no_log: true

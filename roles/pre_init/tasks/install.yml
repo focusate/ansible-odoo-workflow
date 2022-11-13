@@ -29,18 +29,6 @@
 
 # Tasks for app user specifically.
 
-- name: create user for docker
-  ansible.builtin.user:
-    name: "{{ inv_app_user }}"
-    groups:
-      - docker
-    create_home: true
-    home: "{{ inv_app_root_path }}"
-    skeleton: "/etc/skel"
-    system: true
-    # Setting this shell so system user would still use bashrc.
-    shell: /bin/bash
-
 - block:
     - name: Install docker SDK, OdooRPC and other
       ansible.builtin.pip:
@@ -54,12 +42,33 @@
       become: true
       become_user: "{{ inv_app_user }}"
 
+    - name: Install AWS CLI
+      ansible.builtin.pip:
+        name:
+          - awscli==1.27.8
+        extra_args: --user
+      when: use_aws_ecr
+
     - name: Log into Docker Hub
       docker_login:
         username: "{{ inv_registry_user }}"
         password: "{{ inv_shared_secrets.docker_token_r }}"
-        email: "{{ inv_registry_email }}"
       no_log: true
+      when: not use_aws_ecr
+
+    - name: Get AWS ECR token
+      shell: "/opt/odoo/.local/bin/aws ecr get-login-password"
+      register: aws_ecr_token
+      when: use_aws_ecr
+
+    - name: Log into AWS ECR registry
+      docker_login:
+        registry_url: "{{ inv_aws_ecr_host }}"
+        username: "AWS"
+        password: "{{ aws_ecr_token.stdout }}"
+        reauthorize: true
+      no_log: true
+      when: use_aws_ecr
 
     - name: Pull backup service
       community.docker.docker_image:

@@ -1,8 +1,7 @@
 ---
-# Start/Update Odoo and related containers.
 
-- name: Install docker and its prerequisites
-  include_tasks: install.yml
+- name: Create App User
+  include_tasks: app_user.yml
 
 - name: Set up files for root user
   include_tasks: files_root.yml
@@ -13,3 +12,6 @@
     apply:
       become: true
       become_user: "{{ inv_app_user }}"
+
+- name: Install docker and its prerequisites
+  include_tasks: install.yml
