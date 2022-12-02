@@ -1,0 +1,20 @@
+---
+# TODO: currently certbot is used via compose override. We should add
+# it properly via docker-compose.yml template!
+- name: Renew certbot
+  ansible.builtin.cron:
+    name: "renew certbot"
+    minute: "0"
+    hour: "1"
+    job: "cd {{ inv_compose_dir }} && docker-compose run --rm certbot renew"
+  when: init_certbot
+
+- name: Reload nginx
+  ansible.builtin.cron:
+    name: "reload nginx"
+    minute: "0"
+    hour: "2"
+    # Kind of hardcoded. If compose v2 would be used, container name would
+    # use dashes instead of underscores.
+    job: "docker exec -it app_web_1 nginx -s reload"
+  when: init_certbot

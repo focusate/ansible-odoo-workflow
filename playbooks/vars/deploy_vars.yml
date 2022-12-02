@@ -13,6 +13,7 @@ dpl_aws_credentials_file: "{{ dpl_aws_dir }}/credentials"
 dpl_data_dir: "{{ inv_app_root_path }}/data"
 dpl_nginx_logo_file: "{{ dpl_data_dir }}/nginx/maintenance_logo.png"
 dpl_nginx_html_file: "{{ dpl_data_dir }}/nginx/custom_502.html"
+dpl_nginx_conf_file: "{{ dpl_data_dir }}/nginx/nginx.conf"
 # Control vars.
 dpl_init_role: "{{ inv_app_root_path }}/.init_role"
 dpl_force_init: false

@@ -15,3 +15,10 @@
 
 - name: Install docker and its prerequisites
   include_tasks: install.yml
+
+- name: Set up cron jobs for app user
+  include_tasks: cron_app.yml
+  args:
+    apply:
+      become: true
+      become_user: "{{ inv_app_user }}"

@@ -50,6 +50,13 @@
     src: "{{ inv_nginx_html_file }}"
     dest: "{{ dpl_nginx_html_file }}"
 
+# Only create if there is source path specified for it.
+- name: Create Nginx Config file.
+  ansible.builtin.copy:
+    src: "{{ inv_nginx_conf_file }}"
+    dest: "{{ dpl_nginx_conf_file }}"
+  when: inv_nginx_conf_file
+
 - name: Create PostgreSQL conf file.
   ansible.builtin.copy:
     src: "{{ inv_postgres_conf_file }}"

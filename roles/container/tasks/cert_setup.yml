@@ -1,0 +1,38 @@
+---
+
+# Must stop nginx, so opened port would not interfere with certbot during init.
+- name: Stop Nginx container
+  ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv web"
+  args:
+    chdir: "{{ inv_compose_dir }}"
+
+# Expects compose (for now override) to have certbot service defined!
+# TODO: use -m to specify email instead of --register-unsafely-without-email
+# flag!
+- name: Create certificate using certbot
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - --rm
+      - -p
+      - 80:80
+      - certbot
+      - certonly
+      # To make sure we are not stuck on prompt when certificate is
+      # already created and it would ask if we want to renew & replace!
+      - --non-interactive
+      - --register-unsafely-without-email
+      - --agree-tos
+      - --standalone
+      - --preferred-challenge
+      - http
+      - -d
+      - "{{ ansible_host }}"
+  args:
+    chdir: "{{ inv_compose_dir }}"
+
+- name: Start Docker Services
+  community.docker.docker_compose:
+    project_name: "{{ inv_project_name }}"
+    project_src: "{{ inv_compose_dir }}"
