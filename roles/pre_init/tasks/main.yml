@@ -1,10 +1,12 @@
 ---
-
-- name: Create App User
-  include_tasks: app_user.yml
+- name: Install global packages
+  include_tasks: install_root.yml
 
 - name: Set up files for root user
   include_tasks: files_root.yml
+
+- name: Create App User
+  include_tasks: app_user.yml
 
 - name: Set up files for app user
   include_tasks: files_app.yml
@@ -13,8 +15,12 @@
       become: true
       become_user: "{{ inv_app_user }}"
 
-- name: Install docker and its prerequisites
-  include_tasks: install.yml
+- name: Install app user packages
+  include_tasks: install_app.yml
+  args:
+    apply:
+      become: true
+      become_user: "{{ inv_app_user }}"
 
 - name: Set up cron jobs for app user
   include_tasks: cron_app.yml
