@@ -11,6 +11,7 @@ services:
       - db
     volumes:
       - odoo-filestore:/opt/odoo/data
+      - odoo-backups:/opt/odoo/backups
       - type: bind
         source:
           "{{ dpl_secrets_odoo_config_file }}"
@@ -66,8 +67,6 @@ services:
       POSTGRES_USER: "{{ env_postgres_user }}"
       POSTGRES_PORT: "{{ env_postgres_port }}"
       POSTGRES_PASSWORD_FILE: "{{ env_postgres_password_file }}"
-      PGDATA: "{{ dpl_postgres_conf_file }}:/var/lib/postgresql/data/\
-        postgresql.conf"
     networks:
       - backend
   web:
@@ -90,6 +89,8 @@ volumes:
   odoo-db-data:
     driver: local
   odoo-filestore:
+    driver: local
+  odoo-backups:
     driver: local
 
 networks:
