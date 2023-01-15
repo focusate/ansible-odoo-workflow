@@ -5,7 +5,7 @@
     apply:
       become: true
       become_user: "{{ inv_app_user }}"
-  when: init_certbot
+  when: inv_certbot_hosts
 
 - name: Set Up Odoo (update, install modules, setup config)
   include_tasks: setup.yml

@@ -7,7 +7,7 @@
     minute: "0"
     hour: "1"
     job: "cd {{ inv_compose_dir }} && docker-compose run --rm certbot renew"
-  when: init_certbot
+  when: inv_certbot_hosts
 
 - name: Reload nginx
   ansible.builtin.cron:
@@ -17,4 +17,4 @@
     # Kind of hardcoded. If compose v2 would be used, container name would
     # use dashes instead of underscores.
     job: "docker exec -it app_web_1 nginx -s reload"
-  when: init_certbot
+  when: inv_certbot_hosts

@@ -1,5 +1,4 @@
 ---
-
 use_aws_ecr: false
 inv_nginx_conf_file: false
-init_certbot: false
+inv_certbot_hosts: []

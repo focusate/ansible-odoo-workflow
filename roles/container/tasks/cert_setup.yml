@@ -8,8 +8,7 @@
 
 # Expects compose (for now override) to have certbot service defined!
 # TODO: use -m to specify email instead of --register-unsafely-without-email
-# flag!
-- name: Create certificate using certbot
+- name: Create certificates using certbot
   ansible.builtin.command:
     argv:
       - "{{ docker_compose_bin }}"
@@ -19,8 +18,6 @@
       - 80:80
       - certbot
       - certonly
-      # To make sure we are not stuck on prompt when certificate is
-      # already created and it would ask if we want to renew & replace!
       - --non-interactive
       - --register-unsafely-without-email
       - --agree-tos
@@ -28,7 +25,8 @@
       - --preferred-challenge
       - http
       - -d
-      - "{{ ansible_host }}"
+      - "{{ item }}"
+  with_items: "{{ inv_certbot_hosts }}"
   args:
     chdir: "{{ inv_compose_dir }}"
 
