@@ -47,6 +47,7 @@ services:
       # empty string for it to properly recognize it.
       ODOO_OPT_PROXY_MODE: ""
       ODOO_OPT_SAVE: ""
+    restart: unless-stopped
     networks:
       - backend
       - frontend
@@ -67,6 +68,7 @@ services:
       POSTGRES_USER: "{{ env_postgres_user }}"
       POSTGRES_PORT: "{{ env_postgres_port }}"
       POSTGRES_PASSWORD_FILE: "{{ env_postgres_password_file }}"
+    restart: unless-stopped
     networks:
       - backend
   web:
@@ -82,6 +84,7 @@ services:
       - "{{ dpl_secrets_domain_key }}:/etc/ssl/nginx/domain.key"
       - "{{ dpl_nginx_logo_file }}:/usr/share/nginx/html/maintenance_logo.png"
       - "{{ dpl_nginx_html_file }}:/usr/share/nginx/html/custom_502.html"
+    restart: unless-stopped
     networks:
       - frontend
 
