@@ -34,3 +34,18 @@
   ansible.builtin.command: docker exec -it app_web_1 nginx -s reload
   become: true
   become_user: "{{ inv_app_user }}"
+
+- name: Force rebuild all containers
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - down
+      - "&&"
+      - "{{ docker_compose_bin }}"
+      - up
+      - -d
+  args:
+    chdir: "{{ inv_compose_dir }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
+  when: force_rebuild_containers

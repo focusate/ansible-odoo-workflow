@@ -6,7 +6,7 @@ services:
     logging:
       driver: syslog
       options:
-        tag: odoo-container
+        tag: odoo-service
     depends_on:
       - db
     volumes:
@@ -53,6 +53,10 @@ services:
       - frontend
   db:
     image: postgres:13
+    logging:
+      driver: syslog
+      options:
+        tag: db-service
     # Specifying custom path to postgresql.conf, because
     # /var/lib/postgresql/data is used as PGDATA and it conflicts when
     # postgres is started initially (it expects empty data there!).
@@ -73,6 +77,10 @@ services:
       - backend
   web:
     image: focusate/nginx:latest
+    logging:
+      driver: syslog
+      options:
+        tag: web-service
     ports:
       - 80:80
       - 443:443

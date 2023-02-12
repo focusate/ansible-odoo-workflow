@@ -1,5 +1,6 @@
 ---
 - hosts: "{{ target | default('test_prod') }}"
+  strategy: "{{ strategy | default('free') }}"
   pre_tasks:
     - name: Prepare for prod deployment
       include_role:
