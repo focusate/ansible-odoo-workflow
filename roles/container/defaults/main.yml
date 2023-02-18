@@ -1,2 +1,2 @@
 ---
-force_restart_containers: false
+force_rebuild_containers: false

@@ -1,4 +1,11 @@
 ---
+- name: Set SWAP
+  ansible.builtin.include_role:
+    name: geerlingguy.swap
+  vars:
+    swap_file_size_mb: "{{ SWAP_SIZE_MB }}"
+  when: SWAP_SIZE_MB is defined
+
 - name: Install global packages
   include_tasks: install_root.yml
 

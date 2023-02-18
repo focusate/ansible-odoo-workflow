@@ -13,3 +13,7 @@ You can use these playbooks to manage production and stage environments:
 * Restore prod backup on stage environment.
 * Setup Odoo container combined with nginx and PostgreSQL
 * Update Odoo container to take new changes.
+
+To use external roles, run `ansible-galaxy install -r requirements.yml`
+
+To set Swap, specify `SWAP_SIZE_MB` (mebibytes) on host.
