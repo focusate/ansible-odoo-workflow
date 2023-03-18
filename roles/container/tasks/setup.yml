@@ -25,8 +25,24 @@
 
 - name: Stop Odoo container
   ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv odoo"
+  async: 10
+  poll: 0  # not wait for response
   args:
     chdir: "{{ inv_compose_dir }}"
+
+- name: Force Update Specified Odoo Modules
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - --rm
+      - odoo
+      - fc-odoo
+      - -u
+      - "{{ odoo_update_modules_list }}"
+      - --stop-after-init
+    chdir: "{{ inv_compose_dir }}"
+  when: odoo_update_modules_list is defined
 
 - name: Update Odoo modules
   ansible.builtin.command:
