@@ -62,6 +62,12 @@
     src: "{{ inv_postgres_conf_file }}"
     dest: "{{ dpl_postgres_conf_file }}"
 
+- name: Create PostgreSQL hba file.
+  ansible.builtin.copy:
+    src: "{{ inv_postgres_hba_file }}"
+    dest: "{{ dpl_postgres_hba_file }}"
+  when: inv_postgres_hba_file is defined
+
 - name: Create postgres password file
   ansible.builtin.copy:
     content: "{{ inv_host_secrets.postgres_password }}"

@@ -60,10 +60,10 @@ services:
     # Specifying custom path to postgresql.conf, because
     # /var/lib/postgresql/data is used as PGDATA and it conflicts when
     # postgres is started initially (it expects empty data there!).
-    command: ["postgres", "-c", "config_file=/etc/postgresql.conf"]
+    command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
-      - "{{ dpl_postgres_conf_file }}:/etc/postgresql.conf"
+      - "{{ dpl_postgres_conf_file }}:/etc/postgresql/postgresql.conf"
       - type: bind
         source: "{{ dpl_secrets_postgres_file }}"
         target: "{{ env_postgres_password_file }}"
