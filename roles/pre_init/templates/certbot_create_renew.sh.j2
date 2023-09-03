@@ -1,13 +1,14 @@
 #!/bin/bash
 DIR={{ inv_compose_dir }}
+DOCKER_COMPOSE_BIN={{ docker_compose_bin }}
 EMAIL={{ certbot_email }}
 HOSTS=({{ inv_certbot_hosts | join(' ') }})
 cd $DIR
-docker-compose rm -fsv web
+$DOCKER_COMPOSE_BIN rm -fsv web
 ## now loop through the above array
 for host in "${HOSTS[@]}"
 do
-    {{ docker_compose_bin }} run --rm -p 80:80 certbot certonly --non-interactive -m $EMAIL --agree-tos --standalone --preferred-challenge http -d $host
+    $DOCKER_COMPOSE_BIN run --rm -p 80:80 certbot certonly --non-interactive -m $EMAIL --agree-tos --standalone --preferred-challenge http -d $host
 done
 
-docker-compose down && docker-compose up -d
+$DOCKER_COMPOSE_BIN down && $DOCKER_COMPOSE_BIN up -d
