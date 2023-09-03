@@ -1,5 +1,10 @@
 ---
 # Directories
+- name: Create scripts directory
+  ansible.builtin.file:
+    path: "{{ dpl_scripts_dir }}"
+    state: directory
+
 - name: Create secrets directory
   ansible.builtin.file:
     path: "{{ dpl_secrets_dir }}"
@@ -40,6 +45,13 @@
     - filestore
 
 # Files
+- name: Create Certbot Create/Renew Script.
+  ansible.builtin.template:
+    src: certbot_create_renew.sh.j2
+    dest: "{{ dpl_certbot_create_renew_file }}"
+    mode: a+x
+  when: inv_certbot_hosts
+
 - name: Create Nginx Maintenance Image file.
   ansible.builtin.copy:
     src: "{{ inv_nginx_logo_file }}"

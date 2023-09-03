@@ -1,5 +1,6 @@
 ---
 # Destination paths.
+dpl_scripts_dir: "{{ inv_app_root_path }}/scripts"
 dpl_postgres_dir: "{{ inv_app_root_path }}/postgres_cfg"
 dpl_postgres_conf_file: "{{ dpl_postgres_dir }}/postgresql.conf"
 dpl_postgres_hba_file: "{{ dpl_postgres_dir }}/pg_hba.conf"
@@ -21,3 +22,5 @@ dpl_force_init: false
 # Helper vars.
 # This path becomes available when docker is installed via pip.
 docker_compose_bin: /opt/odoo/.local/bin/docker-compose
+# Certbot
+dpl_certbot_create_renew_file: "{{ dpl_scripts_dir }}/certbot_create_renew.sh"

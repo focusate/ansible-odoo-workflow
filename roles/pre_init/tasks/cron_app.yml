@@ -6,11 +6,13 @@
     name: "renew certbot"
     minute: "0"
     hour: "1"
-    job: "cd {{ inv_compose_dir }} && docker-compose run --rm certbot renew"
+    job: "{{ dpl_certbot_create_renew_file }}"
   when: inv_certbot_hosts
 
 - name: Reload nginx
   ansible.builtin.cron:
+    # TODO: remove this cron entirely
+    state: absent
     name: "reload nginx"
     minute: "0"
     hour: "2"
