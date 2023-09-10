@@ -32,6 +32,11 @@
     path: "{{ dpl_data_dir }}/nginx"
     state: directory
 
+- name: Create data marabunta directory
+  ansible.builtin.file:
+    path: "{{ dpl_marabunta_dir }}"
+    state: directory
+
 - name: Create docker-compose directory
   ansible.builtin.file:
     path: "{{ inv_compose_dir }}"
@@ -74,6 +79,12 @@
     src: "{{ inv_nginx_conf_file }}"
     dest: "{{ dpl_nginx_conf_file }}"
   when: inv_nginx_conf_file
+
+- name: Create Custom Marabunta file.
+  ansible.builtin.copy:
+    src: "{{ inv_marabunta_custom_mig_file }}"
+    dest: "{{ dpl_marabunta_custom_mig_file }}"
+  when: inv_marabunta_custom_mig_file
 
 - name: Create PostgreSQL conf file.
   ansible.builtin.copy:

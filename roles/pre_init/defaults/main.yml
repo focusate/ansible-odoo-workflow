@@ -8,3 +8,4 @@ odoo_list_db: "False"
 odoo_server_wide_modules: base,web
 odoo_queue_job_channels: ""
 odoo_running_env: ""
+inv_marabunta_custom_mig_file: null
