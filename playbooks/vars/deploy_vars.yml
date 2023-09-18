@@ -2,6 +2,7 @@
 # Destination paths.
 dpl_scripts_dir: "{{ inv_app_root_path }}/scripts"
 dpl_postgres_dir: "{{ inv_app_root_path }}/postgres_cfg"
+dpl_migrations_dir: "{{ inv_app_root_path }}/migrations"
 dpl_postgres_conf_file: "{{ dpl_postgres_dir }}/postgresql.conf"
 dpl_postgres_hba_file: "{{ dpl_postgres_dir }}/pg_hba.conf"
 dpl_secrets_dir: "{{ inv_app_root_path }}/.secrets"

@@ -20,6 +20,9 @@ services:
       - type: bind
         source: "{{ dpl_secrets_postgres_file }}"
         target: "{{ env_postgres_password_file }}"
+{% if inv_migrations_dir is defined and inv_migrations_dir %}
+      - {{ dpl_migrations_dir }}:/opt/odoo/migrations
+{% endif %}
     environment:
       POSTGRES_DB: "{{ env_postgres_db }}"
       POSTGRES_USER: "{{ env_postgres_user }}"

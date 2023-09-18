@@ -116,3 +116,10 @@
     dest: "{{ dpl_aws_credentials_file }}"
   when: use_aws_ecr
   no_log: true
+
+# Intended to be used with xodoo package.
+- name: Copy Migration files
+  ansible.builtin.copy:
+    src: "{{ inv_migrations_dir }}/"
+    dest: "{{ dpl_migrations_dir }}"
+  when: inv_migrations_dir is defined

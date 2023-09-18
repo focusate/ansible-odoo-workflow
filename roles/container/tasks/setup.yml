@@ -62,3 +62,12 @@
   ansible.builtin.command: "{{ docker_compose_bin }} run --rm odoo fc-maraplus"
   args:
     chdir: "{{ inv_compose_dir }}"
+
+# We run these migrations to set up/change custom data for specific customer.
+# Thats why it is run at the end.
+- name: Run migration
+  ansible.builtin.include_role:
+    name: migration
+  vars:
+    migration_path: /opt/odoo/migrations
+  when: inv_migrations_dir is defined
