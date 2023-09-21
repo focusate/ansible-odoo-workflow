@@ -1,0 +1,12 @@
+[options]
+admin_passwd = {{ inv_host_secrets.odoo_master_password }}
+proxy_mode = {{ odoo_proxy_mode }}
+list_db = {{ odoo_list_db }}
+server_wide_modules = {{ odoo_server_wide_modules }}
+{% if odoo_running_env %}
+running_env = {{ odoo_running_env }}
+{% endif %}
+{% if odoo_queue_job_channels %}
+[queue_job]
+channels = {{ odoo_queue_job_channels }}
+{% endif %}

@@ -87,8 +87,8 @@
   no_log: true
 
 - name: Create Odoo config file
-  ansible.builtin.copy:
-    content: "{{ inv_host_secrets.odoo_config }}"
+  ansible.builtin.template:
+    src: odoo.conf.j2
     dest: "{{ dpl_secrets_odoo_config_file }}"
   no_log: true
 
