@@ -10,6 +10,12 @@
     path: "{{ dpl_secrets_dir }}"
     state: directory
 
+- name: Create odoo running env directory
+  ansible.builtin.file:
+    path: "{{ dpl_running_env_dir }}"
+    state: directory
+  when: odoo_running_env
+
 - name: Create AWS dir
   ansible.builtin.file:
     path: "{{ dpl_aws_dir }}"
@@ -91,6 +97,15 @@
     src: odoo.conf.j2
     dest: "{{ dpl_secrets_odoo_config_file }}"
   no_log: true
+
+- name: Create Odoo running env files
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "{{ dpl_running_env_dir }}/\
+    {{ item | basename | regex_replace('\\.j2$', '') }}"
+  with_fileglob:
+    - "{{ inv_running_env_templates }}/*.j2"
+  when: odoo_running_env
 
 - name: Create Domain Bundle Certificate
   ansible.builtin.copy:

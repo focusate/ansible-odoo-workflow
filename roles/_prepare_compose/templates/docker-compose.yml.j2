@@ -23,6 +23,9 @@ services:
 {% if inv_migrations_dir is defined and inv_migrations_dir %}
       - {{ dpl_migrations_dir }}:/opt/odoo/migrations
 {% endif %}
+{% if odoo_running_env is defined and odoo_running_env %}
+      - {{ dpl_running_env_dir }}:{{ inv_container_running_env_path }}
+{% endif %}
     environment:
       POSTGRES_DB: "{{ env_postgres_db }}"
       POSTGRES_USER: "{{ env_postgres_user }}"
