@@ -1,0 +1,11 @@
+---
+- name: Fetch public key data from delegate host
+  ansible.builtin.command: cat ~/.ssh/id_ed25519.pub
+  delegate_to: "{{ delegated_restore_host }}"
+  register: public_key_data
+
+- name: Add public key from delegate host
+  ansible.posix.authorized_key:
+    user: root
+    state: present
+    key: "{{ public_key_data.stdout }}"

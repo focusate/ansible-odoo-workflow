@@ -12,7 +12,6 @@
       when: init_role_data.stat.path is not defined or dpl_force_init
     }
     - {role: _prepare_compose, tags: prep_compose}
-    - {role: backup, tags: backup}
     - {role: container, tags: container}
     - {
       role: post_init,

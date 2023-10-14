@@ -1,0 +1,12 @@
+---
+- hosts: "{{ target | default('stage') }}"
+  pre_tasks:
+    - ansible.builtin.include_vars: deploy_vars.yml
+    - name: Target is not in stage group
+      ansible.builtin.fail:
+        msg: "ENV_MODE is '{{ ENV_MODE }}', expects 'stage'"
+      when: ENV_MODE != "stage"
+  roles:
+    - role: delegated_restore
+      vars:
+        delegated_restore_host: "{{ inv_backups_host }}"

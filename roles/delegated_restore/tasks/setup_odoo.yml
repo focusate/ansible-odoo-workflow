@@ -1,0 +1,32 @@
+---
+# TODO: these tasks are the same as in container role. Refactor to reuse
+# it properly!
+- name: Update Odoo modules
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - --rm
+      - odoo
+      - fc-update
+      - --ignore-core-addons
+      - -d
+      - "{{ inv_db_name }}"
+    chdir: "{{ inv_compose_dir }}"
+  register: docker_compose_output
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+- name: Run Maraplus to setup Odoo.
+  ansible.builtin.command: "{{ docker_compose_bin }} run --rm odoo fc-maraplus"
+  args:
+    chdir: "{{ inv_compose_dir }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+- name: Run migration
+  ansible.builtin.include_role:
+    name: migration
+  vars:
+    migration_path: /opt/odoo/migrations
+  when: inv_migrations_dir is defined

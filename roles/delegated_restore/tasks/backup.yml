@@ -1,0 +1,45 @@
+---
+- name: Delete old backup if it exists
+  ansible.builtin.file:
+    state: absent
+    path: "{{ delegated_src_db }}"
+  delegate_to: "{{ delegated_restore_host }}"
+
+- name: Backup db on delegated
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - -e
+      - "PGPASSWORD={{ inv_host_secrets.postgres_password }}"
+      - --rm
+      - odoo
+      - pg_dump
+      - -U
+      - odoo
+      - -h
+      - db
+      - -j
+      - "{{ delegated_backup_jobs }}"
+      - -F
+      - d
+      - -f
+      - "/opt/odoo/backups/{{ delegated_dbname }}"
+      - "{{ delegated_dbname }}"
+    chdir: "{{ inv_compose_dir }}"
+  delegate_to: "{{ delegated_restore_host }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
+  no_log: true
+
+- name: Delete old backup before copying new
+  ansible.builtin.file:
+    state: absent
+    path: "{{ delegated_dest_db }}"
+
+- name: Copy DB from src to dest backup dir
+  ansible.builtin.synchronize:
+    src: "{{ delegated_src_db }}"
+    dest: "{{ delegated_dest_db }}"
+    archive: true
+  delegate_to: "{{ delegated_restore_host }}"
