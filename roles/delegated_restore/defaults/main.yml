@@ -1,0 +1,12 @@
+---
+delegated_dbname: odoodb
+delegated_src_filestore: "/var/lib/docker/volumes/app_odoo-filestore/\
+  _data/filestore/{{ delegated_dbname }}/"
+delegated_dest_filestore: "{{ delegated_src_filestore }}"
+delegated_src_db: "/var/lib/docker/volumes/app_odoo-backups/\
+  _data/{{ delegated_dbname }}/"
+delegated_dest_db: "{{ delegated_src_db }}"
+delegated_backup_jobs: 8
+delegated_restore_jobs: 8
+delegated_do_src_backup: true
+delegated_db_template: template1

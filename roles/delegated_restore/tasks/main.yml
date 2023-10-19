@@ -1,0 +1,39 @@
+---
+- name: Setup access from delegated to this host
+  include_tasks: delegated_access.yml
+
+- name: Run backup on delegated host
+  include_tasks: backup.yml
+  when: delegated_do_src_backup
+
+- name: Run restore on this host (with filestore sync)
+  include_tasks: restore.yml
+
+- name: Set up Odoo
+  include_tasks: setup_odoo.yml
+
+- name: Start Odoo
+  community.docker.docker_compose:
+    project_name: "{{ inv_project_name }}"
+    project_src: "{{ inv_compose_dir }}"
+  register: docker_compose_output
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+# To wait for odoo to be running and change admin password
+- name: Post handle delegated restore.
+  ansible.builtin.include_role:
+    name: post_init
+
+# Expects odoo container to be up!
+- name: Reset DB params
+  ansible.builtin.expect:
+    command: docker exec -it app_odoo_1 bash -c 'odoo shell -p 8055'
+    responses:
+      '>>> ':
+        - env['ir.config_parameter'].init(force=True)
+        - env.cr.commit()
+        - exit()
+  become: true
+  become_user: "{{ inv_app_user }}"
+  no_log: true

@@ -3,17 +3,3 @@
   community.crypto.openssh_keypair:
     path: ~/.ssh/id_ed25519
     type: ed25519
-
-- block:
-    - name: Fetch public key data from inv_backups_host
-      ansible.builtin.command: cat ~/.ssh/id_ed25519.pub
-      delegate_to: "{{ inv_backups_host }}"
-      register: public_key_data
-
-    - name: "Add public key from inv_backups_host"
-      ansible.posix.authorized_key:
-        user: root
-        state: present
-        key: "{{ public_key_data.stdout }}"
-
-  when: inv_backups_host is defined
