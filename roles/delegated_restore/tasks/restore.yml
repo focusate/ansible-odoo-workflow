@@ -52,6 +52,7 @@
       - db
       - -U
       - odoo
+      - --no-privileges
       - --no-owner
       - --format
       - d
