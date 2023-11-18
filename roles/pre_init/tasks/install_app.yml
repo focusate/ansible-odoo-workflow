@@ -7,6 +7,8 @@
       - odoorpc==0.8.0
       # Used to manage Odoo shell operations (like password change).
       - pexpect==4.8.0
+      # For creating postgresql users/roles.
+      - psycopg2-binary==2.9.9
     extra_args: --user
 
 - name: Install AWS CLI
@@ -36,8 +38,3 @@
     reauthorize: true
   no_log: true
   when: use_aws_ecr
-
-- name: Pull backup service
-  community.docker.docker_image:
-    name: loomchild/volume-backup
-    source: pull

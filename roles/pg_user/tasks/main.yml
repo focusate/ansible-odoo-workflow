@@ -1,0 +1,33 @@
+---
+# NOTE. Postgres user creation only works if pg_port is open from db
+# container!
+- name: Create user/role for postgres
+  community.postgresql.postgresql_user:
+    db: "{{ pg_user_dbname }}"
+    encrypted: true
+    login_user: "{{ pg_user_login_user }}"
+    login_password: "{{ pg_user_login_password }}"
+    login_host: "{{ pg_user_login_host }}"
+    port: "{{ pg_user_port }}"
+    # User to create options.
+    name: "{{ pg_user_name }}"
+    password: "{{ pg_user_password }}"
+    state: "{{ pg_user_state }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
+
+- name: Grant SELECT on Tables
+  community.postgresql.postgresql_privs:
+    db: "{{ pg_user_dbname }}"
+    login_user: "{{ pg_user_login_user }}"
+    login_password: "{{ pg_user_login_password }}"
+    login_host: "{{ pg_user_login_host }}"
+    port: "{{ pg_user_port }}"
+    # Privilege options.
+    objs: ALL_IN_SCHEMA
+    privs: SELECT
+    role: "{{ pg_user_name }}"
+    state: "{{ pg_user_state }}"
+  become: true
+  become_user: "{{ inv_app_user }}"
+  when: pg_user_priv_mode == 'readonly'

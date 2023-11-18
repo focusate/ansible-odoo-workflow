@@ -1,0 +1,9 @@
+---
+pg_user_dbname: "{{ inv_db_name }}"
+pg_user_login_user: "{{ inv_app_user }}"
+pg_user_login_password: "{{ inv_host_secrets.postgres_password | trim }}"
+pg_user_state: present
+pg_user_login_host: 127.0.0.1
+# Currently only readonly privilege mode is supported.
+pg_user_priv_mode: readonly
+pg_user_port: "{{ pg_port }}"

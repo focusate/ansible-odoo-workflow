@@ -1,4 +1,11 @@
 ---
+- name: Start Odoo
+  community.docker.docker_compose:
+    project_name: "{{ inv_project_name }}"
+    project_src: "{{ inv_compose_dir }}"
+  register: docker_compose_output
+  become: true
+  become_user: "{{ inv_app_user }}"
 
 - name: Save Odoo container status
   set_fact:
@@ -17,6 +24,15 @@
   vars:
     user_login: "{{ inv_host_secrets.odoo_admin_user_login }}"
     user_pwd: "{{ inv_host_secrets.odoo_admin_user_pwd }}"
+
+- name: Create Postgres Users
+  include_role:
+    name: pg_user
+  vars:
+    pg_user_name: "{{ item.name }}"
+    pg_user_password: "{{ item.password }}"
+    pg_user_priv_mode: "{{ item.priv_mode }}"
+  loop: "{{ inv_pg_users }}"
 
 # Deprecated.
 - name: Create .init_role to mark initiation as done.

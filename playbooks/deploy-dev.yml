@@ -6,13 +6,7 @@
       include_role:
         name: _prepare_deploy
   roles:
-    - {
-      role: pre_init,
-      tags: init,
-    }
-    - {role: _dropdb, tags: dropdb}
-    - {role: container, tags: container}
-    - {
-      role: post_init,
-      tags: init,
-    }
+    - pre_init
+    - _dropdb
+    - container
+    - post_init
