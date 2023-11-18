@@ -87,15 +87,14 @@
   when: inv_marabunta_custom_mig_file
 
 - name: Create PostgreSQL conf file.
-  ansible.builtin.copy:
-    src: "{{ inv_postgres_conf_file }}"
+  ansible.builtin.template:
+    src: postgresql.conf.j2
     dest: "{{ dpl_postgres_conf_file }}"
 
 - name: Create PostgreSQL hba file.
-  ansible.builtin.copy:
-    src: "{{ inv_postgres_hba_file }}"
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
     dest: "{{ dpl_postgres_hba_file }}"
-  when: inv_postgres_hba_file is defined
 
 - name: Create postgres password file
   ansible.builtin.copy:
@@ -149,3 +148,14 @@
     src: "{{ inv_migrations_dir }}/"
     dest: "{{ dpl_migrations_dir }}"
   when: inv_migrations_dir is defined
+
+# Docker files
+- name: Create docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ inv_compose_dir }}/docker-compose.yml"
+
+- name: Create docker-compose.override.yml
+  ansible.builtin.template:
+    src: "{{ inv_compose_override_file }}"
+    dest: "{{ inv_compose_dir }}/docker-compose.override.yml"

@@ -1,6 +1,6 @@
 ---
 
-- name: Force rebuild all containers
+- name: Force rebuild/restart all containers
   ansible.builtin.command:
     argv:
       - "{{ docker_compose_bin }}"
@@ -46,7 +46,17 @@
   become: true
   become_user: "{{ inv_app_user }}"
 
-- name: Reload Nginx
-  ansible.builtin.command: docker exec -it app_web_1 nginx -s reload
+- name: Restart all containers
+  ansible.builtin.command:
+    argv:
+      # For some reason postgres changes dont take effect using down/up.
+      # So also restarting all services to make sure it does!
+      - "{{ docker_compose_bin }}"
+      - restart
+      - odoo
+      - db
+      - web
+  args:
+    chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"

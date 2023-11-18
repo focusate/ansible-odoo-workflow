@@ -63,16 +63,21 @@ services:
       driver: syslog
       options:
         tag: db-service
+{% if pg_open_port %}
+    ports:
+      - {{ pg_port }}:{{ pg_port }}
+{% endif %}
     # Specifying custom path to postgresql.conf, because
     # /var/lib/postgresql/data is used as PGDATA and it conflicts when
     # postgres is started initially (it expects empty data there!).
-    command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
+    command: ["-c", "config_file={{ path_container_postgres_conf }}"]
     volumes:
       - odoo-db-data:/var/lib/postgresql/data
-      - "{{ dpl_postgres_conf_file }}:/etc/postgresql/postgresql.conf"
+      - "{{ dpl_postgres_conf_file }}:{{ path_container_postgres_conf }}"
       - type: bind
         source: "{{ dpl_secrets_postgres_file }}"
         target: "{{ env_postgres_password_file }}"
+      - {{ dpl_postgres_hba_file }}:{{ path_container_pg_hba_conf }}
     environment:
       POSTGRES_DB: "{{ env_postgres_db }}"
       POSTGRES_USER: "{{ env_postgres_user }}"

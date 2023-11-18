@@ -9,12 +9,9 @@
     - {
       role: pre_init,
       tags: init,
-      when: init_role_data.stat.path is not defined or dpl_force_init
     }
-    - {role: _prepare_compose, tags: prep_compose}
     - {role: container, tags: container}
     - {
       role: post_init,
       tags: init,
-      when: init_role_data.stat.path is not defined or dpl_force_init
     }

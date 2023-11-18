@@ -22,7 +22,6 @@ dpl_nginx_conf_file: "{{ dpl_data_dir }}/nginx/nginx.conf"
 dpl_marabunta_custom_mig_file: "{{ dpl_marabunta_dir }}/custom.yml"
 # Control vars.
 dpl_init_role: "{{ inv_app_root_path }}/.init_role"
-dpl_force_init: false
 # Helper vars.
 # This path becomes available when docker is installed via pip.
 docker_compose_bin: /opt/odoo/.local/bin/docker-compose
