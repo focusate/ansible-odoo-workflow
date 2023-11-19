@@ -1,0 +1,95 @@
+{% from 'macros.j2' import nginx_server %}
+user nginx;
+worker_processes auto;
+
+error_log  /var/log/nginx/error.log notice;
+pid        /var/run/nginx.pid;
+
+http {
+    upstream odoo-upstream {
+        server odoo:8069 weight=1 fail_timeout=0;
+    }
+
+    upstream odoo-im-upstream {
+        server odoo:8072 weight=1 fail_timeout=0;
+    }
+
+    # Logging
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    # Basic Settings
+
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    # Enable SSL session caching for improved performance
+    ssl_session_cache shared:ssl_session_cache:5m;
+    ssl_session_timeout 24h; # time which sessions can be re-used.
+    # Because the proper rotation of session ticket encryption key is
+    # not yet implemented in Nginx, we should turn this off for now.
+    ssl_session_tickets off;
+    # Default size is 16k, reducing it can improve performance slightly.
+    ssl_buffer_size 8k;
+    # Gzip Settings
+
+    gzip on;
+
+    # http redirects to https
+    server {
+        listen 80 default_server;
+{# Use generic server name when certbot hosts are not used #}
+{# to match all possible subdomains. #}
+        server_name {{ inv_certbot_hosts and ansible_host or '_'}};
+        return 301 https://$host$request_uri;
+    }
+
+    charset utf-8;
+{# Add server blocks #}
+{% if inv_certbot_hosts %}
+{% for host in inv_certbot_hosts %}
+    {% set ssl_certificate = nginx_ssl_certbot_base_path + '/' + host + '/fullchain.pem' %}
+    {% set ssl_certificate_key = nginx_ssl_certbot_base_path + '/' + host + '/privkey.pem' %}
+{{
+    nginx_server(
+        host,
+        ssl_certificate,
+        ssl_certificate_key,
+        nginx_proxy_connect_timeout,
+        nginx_proxy_send_timeout,
+        nginx_proxy_read_timeout
+    )
+}}
+{% endfor %}
+{# If we don't have certbot hosts, fallback to custom cert. #}
+{% else %}
+    {% set ssl_certificate = nginx_ssl_custom_base_path + '/domain.bundle.crt' %}
+    {% set ssl_certificate_key = nginx_ssl_custom_base_path + '/domain.key' %}
+{{
+    nginx_server(
+        '',
+        ssl_certificate,
+        ssl_certificate_key,
+        nginx_proxy_connect_timeout,
+        nginx_proxy_send_timeout,
+        nginx_proxy_read_timeout
+    )
+}}
+{% endif %}
+
+    include /etc/nginx/conf.d/*.conf;
+}
+
+
+events {
+    worker_connections {{ nginx_worker_connections }};
+}

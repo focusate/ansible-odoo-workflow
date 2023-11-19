@@ -1,22 +1,8 @@
 ---
-# TODO: currently certbot is used via compose override. We should add
-# it properly via docker-compose.yml template!
 - name: Renew certbot
   ansible.builtin.cron:
     name: "renew certbot"
     minute: "0"
     hour: "1"
     job: "{{ dpl_certbot_create_renew_file }}"
-  when: inv_certbot_hosts
-
-- name: Reload nginx
-  ansible.builtin.cron:
-    # TODO: remove this cron entirely
-    state: absent
-    name: "reload nginx"
-    minute: "0"
-    hour: "2"
-    # Kind of hardcoded. If compose v2 would be used, container name would
-    # use dashes instead of underscores.
-    job: "docker exec -it app_web_1 nginx -s reload"
-  when: inv_certbot_hosts
+    state: "{{ inv_certbot_hosts and 'present' or 'absent' }}"

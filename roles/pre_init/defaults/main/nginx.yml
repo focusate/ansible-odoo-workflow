@@ -1,0 +1,8 @@
+---
+inv_certbot_hosts: []
+nginx_ssl_certbot_base_path: /etc/nginx/ssl/live
+nginx_ssl_custom_base_path: /etc/ssl/certs
+nginx_proxy_connect_timeout: 600s
+nginx_proxy_send_timeout: 600s
+nginx_proxy_read_timeout: 600s
+nginx_worker_connections: 1024

@@ -1,0 +1,82 @@
+{% macro
+nginx_server(
+    host,
+    ssl_certificate,
+    ssl_certificate_key,
+    proxy_connect_timeout,
+    proxy_send_timeout,
+    proxy_read_timeout
+)
+%}
+server {
+        # server port and name
+{% if host %}
+        server_name {{ host }};
+{% endif %}
+        listen 443 ssl http2;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header X-Frame-Options sameorigin;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Xss-Protection "1; mode=block";
+        # Specifies the maximum accepted body size of a client request,
+        # as indicated by the request header Content-Length.
+        client_max_body_size 200m;
+
+        # add ssl specific settings
+        keepalive_timeout 60;
+        ssl_certificate {{ ssl_certificate }};
+        ssl_certificate_key {{ ssl_certificate_key }};
+        # Using this to faster verify validity of certificate.
+        ssl_stapling on;
+        ssl_stapling_verify on;
+        # Using this Google DNS to not default to the server’s DNS default.
+        resolver 8.8.4.4 8.8.8.8;
+        ssl_ciphers "EECDH+AESGCM:EDH+AESGCM:ECDHE-RSA-AES128-GCM-SHA256:AES256+EECDH:DHE-RSA-AES128-GCM-SHA256:AES256+EDH:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_dhparam /etc/ssl/certs/dhparam.pem;
+
+        # increase proxy buffer to handle some Odoo web requests
+        proxy_buffers 16 64k;
+        proxy_buffer_size 128k;
+
+        #general proxy settings
+        # force timeouts if the backend dies
+        proxy_connect_timeout {{ proxy_connect_timeout }};
+        proxy_send_timeout {{ proxy_send_timeout }};
+        proxy_read_timeout {{ proxy_read_timeout }};
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503;
+
+        # set headers
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # Let the Odoo web service know that we’re using HTTPS, otherwise
+        # it will generate URL using http:// and not https://
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # by default, do not forward anything
+        proxy_redirect off;
+        proxy_buffering off;
+
+        location / {
+            proxy_pass http://odoo-upstream;
+        }
+
+        location /longpolling {
+            proxy_pass http://odoo-im-upstream;
+        }
+
+        # cache some static data in memory for 60mins.
+        # under heavy load this should relieve stress on the Odoo web interface a bit.
+        location /web/static/ {
+            proxy_cache_valid 200 60m;
+            proxy_buffering on;
+            expires 864000;
+            proxy_pass http://odoo-upstream;
+        }
+        include /etc/nginx/custom_error_page.conf;
+    }
+{% endmacro %}

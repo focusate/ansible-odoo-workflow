@@ -1,5 +1,4 @@
 ---
 use_aws_ecr: false
-inv_nginx_conf_file: false
-inv_certbot_hosts: []
 inv_marabunta_custom_mig_file: null
+path_certbot_conf: "{{ dpl_data_dir }}/certbot/conf/"
