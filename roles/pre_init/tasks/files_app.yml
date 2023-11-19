@@ -73,12 +73,10 @@
     src: "{{ inv_nginx_html_file }}"
     dest: "{{ dpl_nginx_html_file }}"
 
-# Only create if there is source path specified for it.
 - name: Create Nginx Config file.
-  ansible.builtin.copy:
-    src: "{{ inv_nginx_conf_file }}"
+  ansible.builtin.template:
+    src: nginx.conf.j2
     dest: "{{ dpl_nginx_conf_file }}"
-  when: inv_nginx_conf_file
 
 - name: Create Custom Marabunta file.
   ansible.builtin.copy:
@@ -120,7 +118,7 @@
 - name: Create Domain Bundle Certificate
   ansible.builtin.copy:
     content: "{{ inv_shared_secrets.domain_bundle }}"
-    dest: "{{ dpl_dpl_secrets_domain_bundle_file }}"
+    dest: "{{ dpl_secrets_domain_bundle_file }}"
   no_log: true
 
 - name: Create Domain Private Key

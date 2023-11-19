@@ -98,14 +98,26 @@ services:
     depends_on:
       - odoo
     volumes:
-      - "{{ dpl_dpl_secrets_domain_bundle_file }}\
-        :/etc/ssl/nginx/domain.bundle.crt"
-      - "{{ dpl_secrets_domain_key }}:/etc/ssl/nginx/domain.key"
-      - "{{ dpl_nginx_logo_file }}:/usr/share/nginx/html/maintenance_logo.png"
-      - "{{ dpl_nginx_html_file }}:/usr/share/nginx/html/custom_502.html"
+      - {{ dpl_nginx_conf_file }}:/etc/nginx/nginx.conf:ro
+      - {{ dpl_nginx_logo_file }}:/usr/share/nginx/html/maintenance_logo.png
+      - {{ dpl_nginx_html_file }}:/usr/share/nginx/html/custom_502.html
+{# Set volume either for certbot or custom cert. #}
+{% if inv_certbot_hosts %}
+      - {{ path_certbot_conf }}:/etc/nginx/ssl/:ro
+{% else %}
+      - {{ dpl_secrets_domain_bundle_file }}:{{ nginx_ssl_custom_base_path }}/domain.bundle.crt
+      - {{ dpl_secrets_domain_key }}:{{ nginx_ssl_custom_base_path }}/domain.key
+{% endif %}
     restart: unless-stopped
     networks:
       - frontend
+{# Add certbot service if we have cerbot hosts. #}
+{% if inv_certbot_hosts %}
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - {{ path_certbot_conf }}:/etc/letsencrypt/:rw
+{% endif %}
 
 volumes:
   odoo-db-data:
