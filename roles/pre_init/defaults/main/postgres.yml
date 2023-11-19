@@ -1,0 +1,28 @@
+---
+# Assuming these default resources used:
+# DB Version: 13
+# OS Type: linux
+# DB Type: oltp
+# Total Memory (RAM): 4 GB
+# CPUs num: 2
+# Connections num: 550
+# Data Storage: ssd
+pg_max_connections: 550
+pg_shared_buffers: 1GB
+pg_effective_cache_size: 3GB
+pg_maintenance_work_mem: 256MB
+pg_checkpoint_completion_target: 0.9
+pg_wal_buffers: 16MB
+pg_default_statistics_target: 100
+pg_random_page_cost: 1.1
+pg_effective_io_concurrency: 200
+pg_work_mem: 953kB
+pg_min_wal_size: 2GB
+pg_max_wal_size: 8GB
+# Other params
+pg_listen_addresses: "*"
+pg_port: 5432
+pg_open_port: false
+pg_hba_entries: []
+path_container_postgres_conf: /etc/postgresql.conf
+path_container_pg_hba_conf: /etc/pg_hba.conf
