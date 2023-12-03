@@ -141,6 +141,11 @@
   no_log: true
 
 # Intended to be used with xodoo package.
+- name: Copy Common Migration files
+  ansible.builtin.copy:
+    src: "{{ inv_common_migrations_dir }}/"
+    dest: "{{ dpl_common_migrations_dir }}"
+  when: inv_common_migrations_dir is defined and inv_common_migrations_dir
 - name: Copy Migration files
   ansible.builtin.copy:
     src: "{{ inv_migrations_dir }}/"

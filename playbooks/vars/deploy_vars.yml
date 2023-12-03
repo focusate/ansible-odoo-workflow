@@ -2,6 +2,7 @@
 # Destination paths.
 dpl_scripts_dir: "{{ inv_app_root_path }}/scripts"
 dpl_postgres_dir: "{{ inv_app_root_path }}/postgres_cfg"
+dpl_common_migrations_dir: "{{ inv_app_root_path }}/common_migrations"
 dpl_migrations_dir: "{{ inv_app_root_path }}/migrations"
 dpl_data_dir: "{{ inv_app_root_path }}/data"
 dpl_marabunta_dir: "{{ inv_app_root_path }}/data/marabunta"

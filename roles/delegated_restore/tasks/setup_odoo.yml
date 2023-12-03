@@ -24,6 +24,12 @@
   become: true
   become_user: "{{ inv_app_user }}"
 
+- name: Run common migration
+  ansible.builtin.include_role:
+    name: migration
+  vars:
+    migration_path: /opt/odoo/common_migrations
+  when: inv_common_migrations_dir is defined and inv_common_migrations_dir
 - name: Run migration
   ansible.builtin.include_role:
     name: migration
