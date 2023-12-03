@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ target | default('stage') }}"
+- hosts: "{{ target }}"
   pre_tasks:
     - ansible.builtin.include_vars: deploy_vars.yml
     - name: Target is not in stage group

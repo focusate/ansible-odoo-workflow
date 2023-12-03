@@ -65,6 +65,13 @@
 
 # We run these migrations to set up/change custom data for specific customer.
 # Thats why it is run at the end.
+
+- name: Run common migration
+  ansible.builtin.include_role:
+    name: migration
+  vars:
+    migration_path: /opt/odoo/common_migrations
+  when: inv_common_migrations_dir is defined and inv_common_migrations_dir
 - name: Run migration
   ansible.builtin.include_role:
     name: migration
