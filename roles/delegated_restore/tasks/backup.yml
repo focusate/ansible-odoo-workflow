@@ -13,7 +13,7 @@
       - -e
       # Must use variable from delegated host!
       - "PGPASSWORD={{ hostvars[delegated_restore_host].\
-        inv_host_secrets.postgres_password }}"
+        inv_host_secrets.postgres_password | trim }}"
       - --rm
       - odoo
       - pg_dump
