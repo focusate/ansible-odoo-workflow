@@ -29,9 +29,16 @@
 - name: Reset DB params
   ansible.builtin.expect:
     command: docker exec -it app_odoo_1 bash -c 'odoo shell -p 8055'
+    # TODO: for now we re-force web.base.url to use default port,
+    # because when we connect with `8055` odoo will use that port
+    # instead which is not correct. We should redesign docker, so we
+    # could access odoo shell with normal docker compose run, so we
+    # would be accessing it with all proper parameters on.
     responses:
       '>>> ':
-        - env['ir.config_parameter'].init(force=True)
+        - ICP = env['ir.config_parameter']
+        - ICP.init(force=True)
+        - ICP.set_param('web.base.url', 'http://localhost:8069')
         - env.cr.commit()
         - exit()
   become: true
