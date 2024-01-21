@@ -1,5 +1,6 @@
 [options]
 admin_passwd = {{ inv_host_secrets.odoo_master_password }}
+db_maxconn = {{ odoo_db_maxconn }}
 proxy_mode = {{ odoo_proxy_mode }}
 list_db = {{ odoo_list_db }}
 server_wide_modules = {{ odoo_server_wide_modules }}

@@ -19,10 +19,10 @@ pg_effective_io_concurrency: 200
 pg_work_mem: 953kB
 pg_min_wal_size: 2GB
 pg_max_wal_size: 8GB
-pg_max_worker_processes: 8
+pg_max_worker_processes: 2
 pg_max_parallel_workers_per_gather: 2
 pg_max_parallel_maintenance_workers: 2
-pg_max_parallel_workers: 8
+pg_max_parallel_workers: 2
 # Other params
 pg_listen_addresses: "*"
 pg_port: 5432
