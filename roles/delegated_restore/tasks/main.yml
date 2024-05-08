@@ -1,4 +1,7 @@
 ---
+# Include expected vars from pre_init role
+- include_vars: ../../pre_init/defaults/main/postgres.yml
+
 - name: Setup access from delegated to this host
   include_tasks: delegated_access.yml
 
