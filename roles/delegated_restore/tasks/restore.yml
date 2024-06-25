@@ -71,4 +71,5 @@
     src: "{{ delegated_src_filestore }}"
     dest: "{{ delegated_dest_filestore }}"
     archive: true
+    delete: true
   delegate_to: "{{ delegated_restore_host }}"
