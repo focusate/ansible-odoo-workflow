@@ -147,6 +147,7 @@
     dest: "{{ dpl_common_migrations_dir }}/"
     archive: true
     delete: true
+  become: false
   when: inv_common_migrations_dir is defined and inv_common_migrations_dir
 - name: Copy Migration files
   ansible.builtin.synchronize:
@@ -155,6 +156,7 @@
     archive: true
     delete: true
   when: inv_migrations_dir is defined
+  become: false
 
 # Docker files
 - name: Create docker-compose.yml
