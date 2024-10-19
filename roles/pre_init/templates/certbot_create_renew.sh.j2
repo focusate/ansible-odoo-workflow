@@ -5,10 +5,10 @@ EMAIL={{ certbot_email }}
 HOSTS=({{ inv_certbot_hosts | join(' ') }})
 cd $DIR
 $DOCKER_COMPOSE_BIN rm -fsv web
-## now loop through the above array
 for host in "${HOSTS[@]}"
 do
     $DOCKER_COMPOSE_BIN run --rm -p 80:80 certbot certonly --non-interactive -m $EMAIL --agree-tos --standalone --preferred-challenge http -d $host
 done
 
-$DOCKER_COMPOSE_BIN down && $DOCKER_COMPOSE_BIN up -d
+$DOCKER_COMPOSE_BIN up --no-start
+$DOCKER_COMPOSE_BIN start web

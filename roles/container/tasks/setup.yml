@@ -1,33 +1,13 @@
 ---
-- name: Initiate docker containers.
-  community.docker.docker_compose:
-    project_name: "{{ inv_project_name }}"
-    project_src: "{{ inv_compose_dir }}"
-    pull: true
-  register: docker_compose_output
-  become: true
-  become_user: "{{ inv_app_user }}"
-# We want to wait till Odoo is loaded before stopping it, because we
-# want to propertly initialize its database.
-- name: Save Odoo container status
-  set_fact:
-    odoo_ip: "{{ docker_compose_output.services.odoo.app_odoo_1.networks\
-      .app_backend.IPAddress }}"
-
-- name: Wait for Odoo port to be open
-  wait_for:
-    host: "{{ odoo_ip }}"
-    port: 8069
-    state: started
-    # Port can be up, but DB won't be yet initiated (
-    # if it did not exist initially). So giving some time to do it.
-    delay: 10
-
-- name: Stop Odoo container
-  ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv odoo"
-  async: 10
-  poll: 0  # not wait for response
-  args:
+- name: Initilize odoo DB
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - run
+      - --rm
+      - odoo
+      - fc-odoo
+      - --stop-after-init
     chdir: "{{ inv_compose_dir }}"
 
 - name: Force Update Specified Odoo Modules
