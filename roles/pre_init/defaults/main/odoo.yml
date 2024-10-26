@@ -1,7 +1,7 @@
 ---
 # NOTE. Must satisfy this formula!:
 # (1 + workers + max_cron_threads) * odoo_db_maxconn < pg_max_connections
-odoo_db_maxconn: 64
+odoo_db_maxconn: 50
 odoo_proxy_mode: "True"
 odoo_list_db: "False"
 odoo_server_wide_modules: base,web

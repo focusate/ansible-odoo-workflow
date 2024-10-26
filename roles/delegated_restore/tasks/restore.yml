@@ -1,3 +1,4 @@
+
 ---
 - name: Stop Odoo container
   ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv odoo"
