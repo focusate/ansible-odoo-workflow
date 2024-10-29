@@ -1,4 +1,11 @@
 ---
+- name: Pull images
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - pull
+    chdir: "{{ inv_compose_dir }}"
+
 - name: Initilize odoo DB
   ansible.builtin.command:
     argv:
