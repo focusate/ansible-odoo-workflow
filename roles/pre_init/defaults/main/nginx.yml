@@ -6,3 +6,6 @@ nginx_proxy_connect_timeout: 600s
 nginx_proxy_send_timeout: 600s
 nginx_proxy_read_timeout: 600s
 nginx_worker_connections: 1024
+nginx_extra_server_block: false
+nginx_extra_host: ""
+nginx_extra_port: 443
