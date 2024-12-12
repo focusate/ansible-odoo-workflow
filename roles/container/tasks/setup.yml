@@ -17,6 +17,15 @@
       - --stop-after-init
     chdir: "{{ inv_compose_dir }}"
 
+- name: Stop Odoo
+  ansible.builtin.command:
+    argv:
+      - "{{ docker_compose_bin }}"
+      - rm
+      - -fsv
+      - odoo
+    chdir: "{{ inv_compose_dir }}"
+
 - name: Force Update Specified Odoo Modules
   ansible.builtin.command:
     argv:
