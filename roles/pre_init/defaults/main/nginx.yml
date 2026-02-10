@@ -9,3 +9,5 @@ nginx_worker_connections: 1024
 nginx_extra_server_block: false
 nginx_extra_host: ""
 nginx_extra_port: 443
+nginx_http_extra_content: null
+nginx_server_extra_content: null

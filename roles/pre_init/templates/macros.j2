@@ -6,7 +6,8 @@ nginx_server(
     ssl_certificate_key,
     proxy_connect_timeout,
     proxy_send_timeout,
-    proxy_read_timeout
+    proxy_read_timeout,
+    server_extra_content
 )
 %}
 server {
@@ -78,6 +79,11 @@ server {
             expires 864000;
             proxy_pass http://odoo-upstream;
         }
+
+        {% if server_extra_content -%}
+    {{ server_extra_content | indent(8, False) }}
+        {% endif %}
+
         include /etc/nginx/custom_error_page.conf;
     }
 {% endmacro %}

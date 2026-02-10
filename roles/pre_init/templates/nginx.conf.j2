@@ -44,6 +44,9 @@ http {
 
     gzip on;
 
+    {% if nginx_http_extra_content -%}
+    {{ nginx_http_extra_content | indent(4, False) }}
+    {% endif %}
     # http redirects to https
     server {
         listen 80 default_server;
@@ -67,7 +70,8 @@ http {
         ssl_certificate_key,
         nginx_proxy_connect_timeout,
         nginx_proxy_send_timeout,
-        nginx_proxy_read_timeout
+        nginx_proxy_read_timeout,
+        nginx_server_extra_content
     )
 }}
 {% endfor %}
@@ -83,7 +87,8 @@ http {
         ssl_certificate_key,
         nginx_proxy_connect_timeout,
         nginx_proxy_send_timeout,
-        nginx_proxy_read_timeout
+        nginx_proxy_read_timeout,
+        nginx_server_extra_content
     )
 }}
 {% endif %}
@@ -97,14 +102,14 @@ http {
         nginx_extra_ssl_certificate_key,
         nginx_proxy_connect_timeout,
         nginx_proxy_send_timeout,
-        nginx_proxy_read_timeout
+        nginx_proxy_read_timeout,
+        nginx_server_extra_content,
     )
 }}
 {% endif %}
 
     include /etc/nginx/conf.d/*.conf;
 }
-
 
 events {
     worker_connections {{ nginx_worker_connections }};
