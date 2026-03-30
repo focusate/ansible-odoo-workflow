@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR={{ inv_compose_dir }}
-DOCKER_COMPOSE_BIN={{ docker_compose_bin }}
+DOCKER_COMPOSE_BIN="{{ docker_compose_bin }}"
 EMAIL={{ certbot_email }}
 HOSTS=({{ inv_certbot_hosts | join(' ') }})
 cd $DIR
@@ -10,5 +10,5 @@ do
     $DOCKER_COMPOSE_BIN run --rm -p 80:80 certbot certonly --non-interactive -m $EMAIL --agree-tos --standalone --preferred-challenge http -d $host
 done
 
-$DOCKER_COMPOSE_BIN up --no-start
-$DOCKER_COMPOSE_BIN start web
+$DOCKER_COMPOSE_BIN down
+$DOCKER_COMPOSE_BIN up -d

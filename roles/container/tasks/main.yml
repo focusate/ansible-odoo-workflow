@@ -2,13 +2,10 @@
 
 - name: Force rebuild/restart all containers
   ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - down
-      - "&&"
-      - "{{ docker_compose_bin }}"
-      - up
-      - -d
+    argv: >-
+      - {{ docker_compose_bin.split() + [
+          'down', '&&'] + docker_compose_bin.split() + ['up', '-d']
+        }}
   args:
     chdir: "{{ inv_compose_dir }}"
   become: true
@@ -48,14 +45,9 @@
 
 - name: Restart all containers
   ansible.builtin.command:
-    argv:
-      # For some reason postgres changes dont take effect using down/up.
-      # So also restarting all services to make sure it does!
-      - "{{ docker_compose_bin }}"
-      - restart
-      - odoo
-      - db
-      - web
+    # For some reason postgres changes dont take effect using down/up.
+    # So also restarting all services to make sure it does!
+    argv: "{{ docker_compose_bin.split() +  ['restart']}}"
   args:
     chdir: "{{ inv_compose_dir }}"
   become: true

@@ -1,4 +1,3 @@
-
 ---
 - name: Stop Odoo container
   ansible.builtin.command: "{{ docker_compose_bin }} rm -fsv odoo"
@@ -10,58 +9,60 @@
 # Expects db container to be up!
 - name: Drop existing db
   ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - exec
-      - db
-      - dropdb
-      - --if-exists
-      - -U
-      - odoo
-      - "{{ delegated_dbname }}"
+    argv: >-
+      {{ docker_compose_bin.split() + [
+        'exec',
+        'db',
+        'dropdb',
+        '--if-exists',
+        '-U',
+        'odoodb',
+        delegated_dbname,
+      ] }}
     chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"
 
 - name: Create new db from template
   ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - exec
-      - db
-      - createdb
-      - -U
-      - odoo
-      - -T
-      - "{{ delegated_db_template }}"
-      - "{{ delegated_dbname }}"
+    argv: >-
+      {{ docker_compose_bin.split() + [
+        'exec',
+        'db',
+        'createdb',
+        '-U',
+        'odoo',
+        '-T',
+        delegated_db_template,
+        delegated_dbname,
+      ] }}
     chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"
 
 - name: Restore DB
   ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - run
-      - -e
-      - "PGPASSWORD={{ inv_host_secrets.postgres_password | trim }}"
-      - --rm
-      - odoo
-      - pg_restore
-      - -h
-      - db
-      - -U
-      - odoo
-      - --no-privileges
-      - --no-owner
-      - --format
-      - d
-      - --jobs
-      - "{{ delegated_restore_jobs }}"
-      - --dbname
-      - "{{ delegated_dbname }}"
-      - "/opt/odoo/backups/{{ delegated_dbname }}"
+    argv: >-
+      "{{ docker_compose_bin.split() + [
+        'run',
+        '-e',
+        'PGPASSWORD=' + inv_host_secrets.postgres_password | trim,
+        '--rm',
+        'pg_restore',
+        '-h',
+        'db',
+        '-U',
+        'odoo',
+        '--no-privileges',
+        '--no-owner',
+        '--format',
+        'd',
+        '--jobs',
+        delegated_restore_jobs,
+        '--dbname',
+        delegated_dbname,
+        '/opt/odoo/backups/' + delegated_dbname
+      ] }}
     chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"

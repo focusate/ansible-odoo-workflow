@@ -1,13 +1,11 @@
 ---
 - name: Run migration scripts
   ansible.builtin.command:
-    argv:
-      - "{{ docker_compose_bin }}"
-      - run
-      - --rm
-      - odoo
-      - fc-migrate
-      - "{{ migration_path }}"
+    argv: >-
+      {{ docker_compose_bin.split() + [
+          'run', '--rm', 'odoo', 'fc-migrate', migration_path
+        ]
+      }}
     chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"
