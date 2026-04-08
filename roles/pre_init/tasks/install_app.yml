@@ -20,6 +20,7 @@
 
 - name: Log into Docker Hub
   docker_login:
+    registry_url: "{{ REGISTRY_URL | default('docker.io') }}"
     username: "{{ inv_registry_user }}"
     password: "{{ inv_shared_secrets.docker_token_r }}"
   no_log: true
