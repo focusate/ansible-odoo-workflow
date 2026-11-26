@@ -16,7 +16,7 @@
         'dropdb',
         '--if-exists',
         '-U',
-        'odoodb',
+        'odoo',
         delegated_dbname,
       ] }}
     chdir: "{{ inv_compose_dir }}"
@@ -43,11 +43,12 @@
 - name: Restore DB
   ansible.builtin.command:
     argv: >-
-      "{{ docker_compose_bin.split() + [
+      {{ docker_compose_bin.split() + [
         'run',
         '-e',
-        'PGPASSWORD=' + inv_host_secrets.postgres_password | trim,
+        'PGPASSWORD',
         '--rm',
+        'odoo',
         'pg_restore',
         '-h',
         'db',
@@ -66,6 +67,8 @@
     chdir: "{{ inv_compose_dir }}"
   become: true
   become_user: "{{ inv_app_user }}"
+  environment:
+    PGPASSWORD: "{{ inv_host_secrets.postgres_password | trim }}"
   no_log: true
 
 - name: Sync filestore from delegated to this host
